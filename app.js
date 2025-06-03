@@ -13,10 +13,10 @@ mongoose.connect(process.env.MONGO_URI)
 
 const usuarioRoutes = require('./routes/usuarioRoutes');
 
-app.use('/api/produtos', produtosRouter);
-
 app.use(express.json());
 
 app.use('/usuarios', usuarioRoutes);
+
+app.use('/api/produtos', produtosRouter);
 
 module.exports = app;
