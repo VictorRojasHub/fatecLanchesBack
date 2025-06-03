@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Produto = require('../models/Produto');
-const auth = require('../middleware/auth');
+const auth = require('../middleware/authMiddleware');
 
 // Criar novo produto (só admin futuramente)
 router.post('/', auth, async (req, res) => {
