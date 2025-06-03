@@ -10,7 +10,7 @@ router.post('/', auth, async (req, res) => {
     await novoProduto.save();
     res.status(201).json(novoProduto);
   } catch (err) {
-    res.status(400).json({ erro: 'Erro ao criar produto' });
+    res.status(400).json({ erro: 'Erro ao criar produto', detalhes: err.message });
   }
 });
 
