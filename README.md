@@ -44,6 +44,7 @@ Código-fonte do front-end disponível em: [Lizandraferrari/fatec-lanches](https
    ```
   ```bash
    npm install
+   node server.js
    ```
 <br>
 
