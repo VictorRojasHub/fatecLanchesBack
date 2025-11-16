@@ -17,10 +17,10 @@ router.post('/', auth, async (req, res) => {
 // Listar todos os produtos
 router.get('/', async (req, res) => {
   try {
-    const { categoria } = req.query //filtro opcional por categoria
+    const { categoria , ordem} = req.query //filtro opcional por categoria
     const filtro = categoria ? { categoria } : {}
-
-    const produtos = await Produto.find(filtro)    
+    const ordenando = ordem === 'desc' ? -1 : 1;
+    const produtos = await Produto.find(filtro).sort({ preco: ordenando });
     res.json(produtos);
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao buscar produtos' });
