@@ -3,10 +3,13 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 exports.registrar = async (req, res) => {
-  const { nome, email, senha } = req.body;
+  const { nome, email, senha, role } = req.body;
   const senhaHash = bcrypt.hashSync(senha, 10);
   try {
-    const usuario = new Usuario({ nome, email, senhaHash });
+    // Se você quiser validar pelo e-mail aqui:
+    // const papel = email.endsWith('@fatec.sp.gov.br') ? 'ADMIN_UNIDADE' : 'CLIENTE';
+    
+    const usuario = new Usuario({ nome, email, senhaHash, role: role || 'CLIENTE' });
     await usuario.save();
     res.status(201).json({ mensagem: 'Usuário criado' });
   } catch (err) {
@@ -23,8 +26,8 @@ exports.login = async (req, res) => {
     const senhaValida = bcrypt.compareSync(senha, usuario.senhaHash);
     if (!senhaValida) return res.status(401).json({ mensagem: 'Senha incorreta' });
 
-    const token = jwt.sign({ id: usuario._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token });
+    const token = jwt.sign({ id: usuario._id, role: usuario.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.json({ token, role: usuario.role });
   } catch (err) {
     res.status(500).json(err);
   }
