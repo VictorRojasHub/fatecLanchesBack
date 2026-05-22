@@ -13,4 +13,5 @@ const produtoSchema = new mongoose.Schema({
 
 
 
-module.exports = mongoose.model('Produto', ProdutoSchema);
+// O nome aqui deve ser igual ao da linha 4 (produtoSchema)
+module.exports = mongoose.model('Produto', produtoSchema);
