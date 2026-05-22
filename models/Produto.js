@@ -1,12 +1,16 @@
 const mongoose = require('mongoose');
 
-const ProdutoSchema = new mongoose.Schema({
+// models/Produto.js
+const produtoSchema = new mongoose.Schema({
   nome: { type: String, required: true },
-  descricao: String,
   preco: { type: Number, required: true },
-  imagemUrl: String, // pode ser uma URL de imagem
-  disponivel: { type: Boolean, default: true },
-  categoria: { type: String, enum: ['Lanche', 'Bebida', 'Acompanhamento'], default: 'Lanche' }
-});
+  categoria: { type: String, required: true },
+  descricao: String,
+  imagem: String, // Aqui guardaremos a URL do Cloudinary
+  unidadeId: { type: mongoose.Schema.Types.ObjectId, ref: 'Unidade' } // Para o role de admin de unidade
+}); 
+
+
+
 
 module.exports = mongoose.model('Produto', ProdutoSchema);
