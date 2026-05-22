@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const produtosRouter = require('./routes/produtos');
 const auth = require('./routes/auth')
+const pedidosRoutes = require('./routes/pedidosRoutes');
 
 
 mongoose.connect(process.env.MONGO_URI)
@@ -24,7 +25,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/auth', auth);
-
+app.use('/pedidos', pedidosRoutes);
 app.use('/usuarios', usuarioRoutes);
 
 app.use('/api/produtos', produtosRouter);
