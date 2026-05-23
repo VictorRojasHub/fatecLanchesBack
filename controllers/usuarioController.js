@@ -34,23 +34,28 @@ exports.login = async (req, res) => {
 };
 
 exports.atualizarPerfil = async (req, res) => {
-  try {exports.atualizarPerfil = async (req, res) => {
   try {
+    // Pegamos apenas o que veio no body
     const updates = { ...req.body };
 
-    // 1. Se o usuário enviou uma nova senha, tratamos para o campo senhaHash
+    // SEGURANÇA: Removemos campos que NÃO podem ser alterados manualmente
+    delete updates._id;
+    delete updates.__v;
+    delete updates.role; // Impede que um cliente se torne admin sozinho
+
+    // 1. Tratamento da Senha
     if (updates.senha) {
       const salt = await bcrypt.genSalt(10);
       updates.senhaHash = await bcrypt.hash(updates.senha, salt);
-      delete updates.senha; // Removemos o texto puro para não salvar lixo no banco
+      delete updates.senha; // Removemos o texto puro
     }
 
-    // 2. Ajustado para 'req.usuarioId' para bater com o seu authMiddleware
+    // 2. Atualização usando o ID do seu Middleware (req.usuarioId)
     const usuarioAtualizado = await Usuario.findByIdAndUpdate(
       req.usuarioId,
-      updates,
+      { $set: updates }, // Usamos $set para garantir que apenas esses campos mudem
       { new: true, runValidators: true }
-    ).select('-senhaHash'); // Esconde o hash na resposta
+    ).select('-senhaHash');
 
     if (!usuarioAtualizado) {
       return res.status(404).json({ mensagem: "Usuário não encontrado" });
@@ -60,30 +65,12 @@ exports.atualizarPerfil = async (req, res) => {
       mensagem: "Perfil atualizado com sucesso!",
       usuario: usuarioAtualizado
     });
+
   } catch (err) {
-    res.status(400).json({ erro: 'Erro ao atualizar perfil', detalhes: err.message });
-  }
-};
-    const updates = { ...req.body };
-
-    // Se o usuário estiver trocando a senha, precisamos criptografar de novo
-    if (updates.senha) {
-      const salt = await bcrypt.genSalt(10);
-      updates.senha = await bcrypt.hash(updates.senha, salt);
-    }
-
-    // Usamos o req.user.id que o seu authMiddleware extrai do token
-    const usuarioAtualizado = await Usuario.findByIdAndUpdate(
-      req.user.id,
-      updates,
-      { new: true, runValidators: true }
-    ).select('-senha'); // Esconde a senha por segurança
-
-    res.json({
-      mensagem: "Perfil atualizado com sucesso!",
-      usuario: usuarioAtualizado
+    // Mande o erro real para o Postman para podermos ler o que aconteceu
+    res.status(400).json({ 
+      erro: 'Erro ao atualizar perfil', 
+      detalhes: err.message 
     });
-  } catch (err) {
-    res.status(400).json({ erro: 'Erro ao atualizar perfil', detalhes: err.message });
   }
 };
