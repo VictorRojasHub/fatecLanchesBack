@@ -32,3 +32,29 @@ exports.login = async (req, res) => {
     res.status(500).json(err);
   }
 };
+
+exports.atualizarPerfil = async (req, res) => {
+  try {
+    const updates = { ...req.body };
+
+    // Se o usuário estiver trocando a senha, precisamos criptografar de novo
+    if (updates.senha) {
+      const salt = await bcrypt.genSalt(10);
+      updates.senha = await bcrypt.hash(updates.senha, salt);
+    }
+
+    // Usamos o req.user.id que o seu authMiddleware extrai do token
+    const usuarioAtualizado = await Usuario.findByIdAndUpdate(
+      req.user.id,
+      updates,
+      { new: true, runValidators: true }
+    ).select('-senha'); // Esconde a senha por segurança
+
+    res.json({
+      mensagem: "Perfil atualizado com sucesso!",
+      usuario: usuarioAtualizado
+    });
+  } catch (err) {
+    res.status(400).json({ erro: 'Erro ao atualizar perfil', detalhes: err.message });
+  }
+};
