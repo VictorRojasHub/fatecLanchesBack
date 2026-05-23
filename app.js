@@ -9,6 +9,7 @@ const auth = require('./routes/auth')
 const pedidosRoutes = require('./routes/pedidosRoutes');
 
 
+
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB conectado'))
   .catch(err => console.error('Erro ao conectar no MongoDB:', err));
@@ -25,7 +26,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/auth', auth);
-app.use('/pedidos', pedidosRoutes);
+app.use('/api/pedidos', pedidosRoutes);
 app.use('/usuarios', usuarioRoutes);
 
 app.use('/api/produtos', produtosRouter);
