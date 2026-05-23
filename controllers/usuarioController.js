@@ -34,7 +34,36 @@ exports.login = async (req, res) => {
 };
 
 exports.atualizarPerfil = async (req, res) => {
+  try {exports.atualizarPerfil = async (req, res) => {
   try {
+    const updates = { ...req.body };
+
+    // 1. Se o usuário enviou uma nova senha, tratamos para o campo senhaHash
+    if (updates.senha) {
+      const salt = await bcrypt.genSalt(10);
+      updates.senhaHash = await bcrypt.hash(updates.senha, salt);
+      delete updates.senha; // Removemos o texto puro para não salvar lixo no banco
+    }
+
+    // 2. Ajustado para 'req.usuarioId' para bater com o seu authMiddleware
+    const usuarioAtualizado = await Usuario.findByIdAndUpdate(
+      req.usuarioId,
+      updates,
+      { new: true, runValidators: true }
+    ).select('-senhaHash'); // Esconde o hash na resposta
+
+    if (!usuarioAtualizado) {
+      return res.status(404).json({ mensagem: "Usuário não encontrado" });
+    }
+
+    res.json({
+      mensagem: "Perfil atualizado com sucesso!",
+      usuario: usuarioAtualizado
+    });
+  } catch (err) {
+    res.status(400).json({ erro: 'Erro ao atualizar perfil', detalhes: err.message });
+  }
+};
     const updates = { ...req.body };
 
     // Se o usuário estiver trocando a senha, precisamos criptografar de novo
