@@ -77,4 +77,19 @@ router.put('/:id', auth, checkRole(['ADMIN_UNIDADE']), upload.single('imagem'), 
   }
 });
 
+router.get('/', async (req, res) => {
+  try {
+    const { categoria, ordem } = req.query; // Filtro opcional por categoria e ordenação
+    const filtro = categoria ? { categoria } : {};
+    
+    // Define se a ordem é descendente (-1) ou ascendente (1) com base no preço
+    const ordenando = ordem === 'desc' ? -1 : 1;
+    
+    const produtos = await Produto.find(filtro).sort({ preco: ordenando });
+    res.json(produtos);
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao buscar produtos' });
+  }
+});
+
 module.exports = router;
