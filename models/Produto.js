@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const produtoSchema = new mongoose.Schema({
   nome: { type: String, required: true },
   preco: { type: Number, required: true },
+  quantidade: { type: Number, required: true },
   categoria: { type: String, required: true },
   descricao: String,
   imagem: String, // Aqui guardaremos a URL do Cloudinary
