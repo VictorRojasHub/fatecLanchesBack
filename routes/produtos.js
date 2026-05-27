@@ -30,7 +30,7 @@ router.post('/', auth, checkRole(['ADMIN_UNIDADE']), upload.single('imagem'), as
 
     const novoProduto = new Produto({
       ...req.body,
-      imagem: imagemUrl
+      imagemUrl: imagemUrl
     });
 
     await novoProduto.save();
