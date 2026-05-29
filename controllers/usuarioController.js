@@ -74,3 +74,14 @@ exports.atualizarPerfil = async (req, res) => {
     });
   }
 };
+
+exports.obterPerfil = async (req, res) => { 
+  try {
+    const usuario = await Usuario.findById(req.usuarioId).select('-senhaHash'); // Exclui a senha do resultado
+
+    res.json(usuario);
+    
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao obter perfil', detalhes: err.message });
+  }
+};
